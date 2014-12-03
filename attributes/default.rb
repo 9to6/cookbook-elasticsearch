@@ -89,6 +89,11 @@ default.elasticsearch[:thread_stack_size] = "256k"
 
 default.elasticsearch[:env_options] = ""
 
+default.elasticsearch[:indices][:breaker][:fielddata][:limit] = "85%"
+default.elasticsearch[:indices][:breaker][:request][:limit] = "55%"
+default.elasticsearch[:indices][:breaker][:total][:limit] = "90%"
+default.elasticsearch[:indices][:fielddata][:cache][:size] = "75%"
+
 # === OTHER SETTINGS
 #
 default.elasticsearch[:skip_restart] = false
