@@ -28,6 +28,9 @@ if [ -f /etc/sysconfig/network ]; then source /etc/sysconfig/network; fi
 ulimit -n <%= node[:elasticsearch][:limits][:nofile] %>
 ulimit -l <%= node[:elasticsearch][:limits][:memlock] %>
 
+# Maximum number of VMA (Virtual Memory Areas) a process can own
+sysctl -q -w vm.max_map_count=<%= node[:elasticsearch][:limits][:mapcount] %>
+
 # Exit if networking is not up
 #
 [ "$NETWORKING" = "no" ] && exit
