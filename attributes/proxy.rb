@@ -24,6 +24,7 @@ default.elasticsearch[:nginx][:passwords_file] = "#{node.elasticsearch[:path][:c
 # Set this to `true` if you want to use a tool like BigDesk
 #
 default.elasticsearch[:nginx][:allow_cluster_api] = false
+default.elasticsearch[:nginx][:allow_shutdown_api] = false
 
 # Allow responding to unauthorized requests for `/status`,
 # returning `curl -I localhost:9200`

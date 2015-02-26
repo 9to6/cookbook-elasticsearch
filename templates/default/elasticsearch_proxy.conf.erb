@@ -8,11 +8,13 @@ server {
 
   location <%= node.elasticsearch[:nginx][:location] %> {
 
+<% unless node.elasticsearch[:nginx][:allow_shutdown_api] %>
     # Deny Nodes Shutdown API
     if ($request_filename ~ "_shutdown") {
       return 403;
       break;
     }
+<% end %>
 
 <% unless node.elasticsearch[:nginx][:allow_cluster_api] %>
     # Deny access to Cluster API
