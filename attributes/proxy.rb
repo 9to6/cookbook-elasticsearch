@@ -25,6 +25,7 @@ default.elasticsearch[:nginx][:passwords_file] = "#{node.elasticsearch[:path][:c
 #
 default.elasticsearch[:nginx][:allow_cluster_api] = false
 default.elasticsearch[:nginx][:allow_shutdown_api] = false
+default.elasticsearch[:nginx][:allow_root_search] = false
 
 # Allow responding to unauthorized requests for `/status`,
 # returning `curl -I localhost:9200`
