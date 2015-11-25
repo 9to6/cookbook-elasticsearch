@@ -55,6 +55,13 @@ server {
 
   }
 
+<% unless node.elasticsearch[:nginx][:allow_root_search] %>
+  # Deny root _search API
+  location /_search {
+    return 403;
+  }
+<% end %>
+
 <% if node.elasticsearch[:nginx][:allow_status] %>
   location /status {
     proxy_method HEAD;
