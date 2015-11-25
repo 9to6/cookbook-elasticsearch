@@ -1,8 +1,40 @@
 source 'https://rubygems.org'
 
-gem 'pry'
-gem 'chef'
-gem 'vagrant', '1.0.7'
-gem 'berkshelf', '1.2.1'
+group :lint do
+  gem 'foodcritic', '~> 3.0'
+  gem 'rubocop', '~> 0.26'
+end
 
-gem 'faraday', '0.8.9' # Prevent RiotGames/ridley#239
+group :unit do
+  gem 'berkshelf', '~> 4.0.0'
+  gem 'chefspec', '>= 4.2'
+  gem 'chef-sugar'
+end
+
+group :kitchen_common do
+  gem 'test-kitchen'
+end
+
+group :kitchen_vagrant do
+  gem 'kitchen-vagrant'
+  gem 'vagrant-wrapper'
+end
+
+group :kitchen_rackspace do
+  gem 'kitchen-rackspace'
+end
+
+group :kitchen_ec2 do
+  gem 'kitchen-ec2'
+end
+
+group :development do
+  gem 'growl'
+  gem 'rb-fsevent'
+  gem 'guard'
+  gem 'guard-kitchen'
+  gem 'guard-foodcritic'
+  gem 'guard-rubocop'
+  gem 'fauxhai'
+  gem 'pry-nav'
+end

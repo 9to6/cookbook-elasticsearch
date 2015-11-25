@@ -1,167 +1,42 @@
-# Load settings from data bag 'elasticsearch/settings'
-#
-settings = Chef::DataBagItem.load('elasticsearch', 'settings')[node.chef_environment] rescue {}
-Chef::Log.debug "Loaded settings: #{settings.inspect}"
+# elasticsearch version & install type
+default['elasticsearch']['version'] = '2.0.0'
+default['elasticsearch']['install_type'] = :package
 
-# Initialize the node attributes with node attributes merged with data bag attributes
-#
-node.default[:elasticsearch] ||= {}
-node.normal[:elasticsearch]  ||= {}
+# platform_family keyed download URLs
+default['elasticsearch']['download_urls'] = {
+  'debian' => 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.deb',
+  'rhel' => 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.noarch.rpm',
+  'tar' => 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-%s.tar.gz'
+}
 
-include_attribute 'elasticsearch::customize'
+default['elasticsearch']['download_urls_v2'] = {
+  'debian' => 'https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/%s/elasticsearch-%s.deb',
+  'rhel' => 'https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/rpm/elasticsearch/%s/elasticsearch-%s.rpm',
+  'tar' => 'https://download.elasticsearch.org/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/%s/elasticsearch-%s.tar.gz'
+}
 
-node.normal[:elasticsearch]    = DeepMerge.merge(node.default[:elasticsearch].to_hash, node.normal[:elasticsearch].to_hash)
-node.normal[:elasticsearch]    = DeepMerge.merge(node.normal[:elasticsearch].to_hash, settings.to_hash)
-
-
-# === VERSION AND LOCATION
-#
-default.elasticsearch[:version]       = "1.6.0"
-default.elasticsearch[:host]          = "http://download.elastic.co"
-default.elasticsearch[:repository]    = "elasticsearch/elasticsearch"
-default.elasticsearch[:filename]      = nil
-default.elasticsearch[:download_url]  = nil
-
-# === NAMING
-#
-default.elasticsearch[:cluster][:name] = 'elasticsearch'
-default.elasticsearch[:node][:name]    = node.name
-
-# === USER & PATHS
-#
-default.elasticsearch[:dir]       = "/usr/local"
-default.elasticsearch[:bindir]    = "/usr/local/bin"
-default.elasticsearch[:user]      = "elasticsearch"
-default.elasticsearch[:uid]       = nil
-default.elasticsearch[:gid]       = nil
-
-default.elasticsearch[:path][:conf] = "/usr/local/etc/elasticsearch"
-default.elasticsearch[:path][:data] = "/usr/local/var/data/elasticsearch"
-default.elasticsearch[:path][:logs] = "/usr/local/var/log/elasticsearch"
-
-default.elasticsearch[:pid_path]  = "/usr/local/var/run"
-default.elasticsearch[:pid_file]  = "#{node.elasticsearch[:pid_path]}/#{node.elasticsearch[:node][:name].to_s.gsub(/\W/, '_')}.pid"
-
-default.elasticsearch[:templates][:elasticsearch_env] = "elasticsearch-env.sh.erb"
-default.elasticsearch[:templates][:elasticsearch_yml] = "elasticsearch.yml.erb"
-default.elasticsearch[:templates][:logging_yml]       = "logging.yml.erb"
-
-# === MEMORY
-#
-# Maximum amount of memory to use is automatically computed as one half of total available memory on the machine.
-# You may choose to set it in your node/role configuration instead.
-#
-allocated_memory = "#{(node.memory.total.to_i * 0.5 ).floor / 1024}m"
-default.elasticsearch[:allocated_memory] = allocated_memory
-
-# === GARBAGE COLLECTION SETTINGS
-#
-default.elasticsearch[:gc_settings] =<<-CONFIG
-  -XX:+UseParNewGC
-  -XX:+UseConcMarkSweepGC
-  -XX:CMSInitiatingOccupancyFraction=75
-  -XX:+UseCMSInitiatingOccupancyOnly
-  -XX:+HeapDumpOnOutOfMemoryError
-CONFIG
-
-# === LIMITS
-#
-# By default, the `mlockall` is set to true: on weak machines and Vagrant boxes,
-# you may want to disable it.
-#
-default.elasticsearch[:bootstrap][:mlockall] = ( node.memory.total.to_i >= 1048576 ? true : false )
-default.elasticsearch[:limits][:memlock]  = 'unlimited'
-default.elasticsearch[:limits][:nofile]   = '64000'
-default.elasticsearch[:limits][:mapcount] = '262144'
-
-# === PRODUCTION SETTINGS
-#
-default.elasticsearch[:index][:mapper][:dynamic]   = true
-default.elasticsearch[:action][:auto_create_index] = true
-default.elasticsearch[:action][:disable_delete_all_indices] = true
-default.elasticsearch[:node][:max_local_storage_nodes] = 1
-
-default.elasticsearch[:discovery][:zen][:ping][:multicast][:enabled] = true
-default.elasticsearch[:discovery][:zen][:minimum_master_nodes] = 1
-default.elasticsearch[:gateway][:type] = 'local'
-default.elasticsearch[:gateway][:expected_nodes] = 1
-
-default.elasticsearch[:thread_stack_size] = "256k"
-
-default.elasticsearch[:env_options] = ""
-
-default.elasticsearch[:indices][:breaker][:fielddata][:limit] = "85%"
-default.elasticsearch[:indices][:breaker][:request][:limit] = "55%"
-default.elasticsearch[:indices][:breaker][:total][:limit] = "90%"
-default.elasticsearch[:indices][:fielddata][:cache][:size] = "75%"
-
-default.elasticsearch[:http][:max_content_length] = "1gb"
-default.elasticsearch[:cluster][:routing][:allocation][:disk][:watermark][:low] = "90%"
-default.elasticsearch[:cluster][:routing][:allocation][:disk][:watermark][:high] = "95%"
-default.elasticsearch[:cluster][:routing][:allocation][:balance][:shard] = 0.1
-default.elasticsearch[:cluster][:routing][:allocation][:balance][:index] = 0.9
-default.elasticsearch[:cluster][:routing][:allocation][:balance][:primary] = 0.0
-default.elasticsearch[:cluster][:routing][:allocation][:balance][:threshold] = 0.8
-
-  # 1 for not using SSD
-default.elasticsearch[:index][:merge][:scheduler][:max_thread_count] = 1
-
-  # 1GB for indexing performance (ES default : 200MB)
-default.elasticsearch[:index][:translog][:flush_threshold_size] = "1GB"
-
-  # for using Kibana
-default.elasticsearch[:http][:cors][:enabled] = true
-
-# === OTHER SETTINGS
-#
-default.elasticsearch[:skip_restart] = false
-default.elasticsearch[:skip_start] = false
-
-# === PORT
-#
-default.elasticsearch[:http][:port] = 9200
-
-# === CUSTOM CONFIGURATION
-#
-default.elasticsearch[:custom_config] = {}
-
-# === LOGGING
-#
-# See `attributes/logging.rb`
-#
-default.elasticsearch[:logging] = {}
-
-# --------------------------------------------------
-# NOTE: Setting the attributes for elasticsearch.yml
-# --------------------------------------------------
-#
-# The template uses the `print_value` extension method to print attributes with a "truthy"
-# value, set either in data bags, node attributes, role override attributes, etc.
-#
-# It is possible to set *any* configuration value exposed by the Elasticsearch configuration file.
-#
-# For example:
-#
-#     <%= print_value 'cluster.routing.allocation.node_concurrent_recoveries' -%>
-#
-# will print a line:
-#
-#     cluster.routing.allocation.node_concurrent_recoveries: <VALUE>
-#
-# if the either of following node attributes is set:
-#
-# * `node.cluster.routing.allocation.node_concurrent_recoveries`
-# * `node['cluster.routing.allocation.node_concurrent_recoveries']`
-#
-# The default attributes set by the cookbook configure a minimal set inferred from the environment
-# (eg. memory settings, node name), or reasonable defaults for production.
-#
-# The template is based on the elasticsearch.yml file from the Elasticsearch distribution;
-# to set other configurations, set the `node.elasticsearch[:custom_config]` attribute in the
-# node configuration, `elasticsearch/settings` data bag, role/environment definition, etc:
-#
-#     // ...
-#     'threadpool.index.type' => 'fixed',
-#     'threadpool.index.size' => '2'
-#     // ...
-#
+# platform_family keyed download sha256 checksums
+default['elasticsearch']['checksums']['1.4.5']['debian'] = '68dce951181e9802e94fd83b894f4b628394fc44bb01c77eb61fdbd1940d94b5'
+default['elasticsearch']['checksums']['1.4.5']['rhel'] = '29b005c4148036556f78d6bd01a5e7c8e4ea60e2c20f82b63d8362ab46d83a19'
+default['elasticsearch']['checksums']['1.4.5']['tar'] = 'dc28aa9e441cbc3282ecc9cb498bea219355887b102aac872bdf05d5977356e2'
+default['elasticsearch']['checksums']['1.5.0']['debian'] = '15a02a2bea74da2330bb78718efb3a8f83a2b2e040a6ee859e100a6556981f36'
+default['elasticsearch']['checksums']['1.5.0']['rhel'] = 'b72a9fb9a2c0471e8fe1a35373cdcfe39d29e72b7281bfccbdc32d03ee0eff70'
+default['elasticsearch']['checksums']['1.5.0']['tar'] = 'acf572c606552bc446cceef3f8e93814a363ba0d215b323a2864682b3abfbe45'
+default['elasticsearch']['checksums']['1.6.2']['debian'] = 'da22c2df44ade970c7d8ec346fd37a440ed40f9e73fb3427b9eacf44baf298c2'
+default['elasticsearch']['checksums']['1.6.2']['rhel'] = '60c75a6f386bd729c6af2995af0a5290dd0ed6286673d435fc52620721815d91'
+default['elasticsearch']['checksums']['1.6.2']['tar'] = 'b7ef3aae0a263c2312bd1a25b191c3c108c92d5413c3527d776587e582c518d0'
+default['elasticsearch']['checksums']['1.7.1']['debian'] = '5832808f2a4c77de5af225db11da00138d9ea07a17f7b9212f4d2aac5317169d'
+default['elasticsearch']['checksums']['1.7.1']['rhel'] = '9b083f441490b32f98f9bf654e5e8ddec885838128726691103cfda5068423bc'
+default['elasticsearch']['checksums']['1.7.1']['tar'] = '86a0c20eea6ef55b14345bff5adf896e6332437b19180c4582a346394abde019'
+default['elasticsearch']['checksums']['1.7.2']['debian'] = '791fb9f2131be2cf8c1f86ca35e0b912d7155a53f89c2df67467ca2105e77ec2'
+default['elasticsearch']['checksums']['1.7.2']['rhel'] = 'c5410b88494d5cc9fdadf59353430b46c28e58eddc5c610ea4c4516eacc2fa09'
+default['elasticsearch']['checksums']['1.7.2']['tar'] = '6f81935e270c403681e120ec4395c28b2ddc87e659ff7784608b86beb5223dd2'
+default['elasticsearch']['checksums']['1.7.3']['debian'] = '52950c688cb3d6a13686753b4e8b1c80183e81174059924ee08b2df172afbb1c'
+default['elasticsearch']['checksums']['1.7.3']['rhel'] = '2380343487ffafc6a7a834cf51d2abbfb7c5ad9d9d45301671adebf97abc632a'
+default['elasticsearch']['checksums']['1.7.3']['tar'] = 'af517611493374cfb2daa8897ae17e63e2efea4d0377d316baa351c1776a2bca'
+default['elasticsearch']['checksums']['2.0.0-rc1']['debian'] = '6ba92f96676932756ff7113f42d8946679e9be2144acece59bd79367568eb712'
+default['elasticsearch']['checksums']['2.0.0-rc1']['rhel'] = '4dd4bdd1b4333f221bc5d2a2638bdc89282d57923842ce4c76607497abafb44d'
+default['elasticsearch']['checksums']['2.0.0-rc1']['tar'] = 'cfd97bba0c49000a2799fffd359ec351f0ca7ef5f0a8c160920137db6b057784'
+default['elasticsearch']['checksums']['2.0.0']['debian'] = 'f846cab2b7e99159650d38767249275c2fd5d3574fe700ef199cd1cb06ef28bf'
+default['elasticsearch']['checksums']['2.0.0']['rhel'] = '6bd2d7840447836450d8781fffa9e296dfb257b523598c6e55433850e37feb25'
+default['elasticsearch']['checksums']['2.0.0']['tar'] = 'b25f13f615337c2072964fd9fc5c7250f8a2a983b22198daf93548285d5d16df'
