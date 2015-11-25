@@ -1,5 +1,5 @@
 # Encoding: utf-8
-name             'elasticsearch'
+name             'elasticsearch2'
 maintainer       'Karel Minarik'
 maintainer_email 'karel.minarik@elasticsearch.org'
 license          'Apache 2.0'
