@@ -38,3 +38,6 @@ default.elasticsearch[:nginx][:client_max_body_size] = "50M"
 default.elasticsearch[:nginx][:location]             = "/"
 default.elasticsearch[:nginx][:ssl][:cert_file]      = nil
 default.elasticsearch[:nginx][:ssl][:key_file]       = nil
+default.elasticsearch[:nginx][:proxy_connect_timeout] = "60s"
+default.elasticsearch[:nginx][:proxy_read_timeout] = "60s"
+default.elasticsearch[:nginx][:proxy_send_timeout] = "60s"

@@ -38,6 +38,9 @@ server {
     # Pass requests to ElasticSearch
     proxy_pass http://<%= node.elasticsearch.network.host rescue 'localhost' %>:<%= node.elasticsearch.http.port rescue '9200' %>/;
     proxy_redirect off;
+    proxy_connect_timeout <%= node.elasticsearch[:nginx][:proxy_connect_timeout] %>;
+    proxy_read_timeout <%= node.elasticsearch[:nginx][:proxy_read_timeout] %>;
+    proxy_send_timeout <%= node.elasticsearch[:nginx][:proxy_send_timeout] %>;
 
     proxy_set_header  X-Real-IP  $remote_addr;
     proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
