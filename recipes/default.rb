@@ -37,7 +37,7 @@ end
 
 # Create ES directories
 #
-[ node.elasticsearch2[:path][:conf], node.elasticsearch2[:path][:logs] ].each do |path|
+[ node.elasticsearch2[:path][:logs] ].each do |path|
   directory path do
     owner node.elasticsearch2[:user] and group node.elasticsearch2[:user] and mode 0755
     recursive true
