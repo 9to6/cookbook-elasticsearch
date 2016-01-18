@@ -37,7 +37,7 @@ sysctl -q -w vm.max_map_count=<%= node[:elasticsearch2][:limits][:mapcount] %>
 
 PIDFILE='<%= node.elasticsearch2[:pid_file] %>'
 ES_INCLUDE='<%= node.elasticsearch2[:path][:conf] %>/elasticsearch-env.sh'
-CHECK_PID_RUNNING=$(ps ax | grep 'java' | grep -e "es.pidfile=$PIDFILE" | sed 's/^\s*\([0-9]*\)\s.*/\1/')
+CHECK_PID_RUNNING=$(ps ax | grep 'java' | grep -e "$PIDFILE" | sed 's/^\s*\([0-9]*\)\s.*/\1/')
 RUBY_BIN=""
 
 if command -v ruby >/dev/null 2>&1; then
@@ -125,7 +125,7 @@ stop() {
 restart() {
     stop
     timeout=30
-    while ps aux | grep 'java' | grep -e "es.pidfile"; do
+    while ps aux | grep 'java' | grep -e "$PIDFILE"; do
       echo -n '.'
       (( timeout-- ))
       if [ $timeout -lt '1' ]; then return; fi
