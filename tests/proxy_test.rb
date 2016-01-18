@@ -1,4 +1,4 @@
-describe_recipe 'elasticsearch::proxy' do
+describe_recipe 'elasticsearch2::proxy' do
 
   include MiniTest::Chef::Assertions
   include MiniTest::Chef::Context

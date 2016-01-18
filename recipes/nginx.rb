@@ -43,7 +43,7 @@ end
 
 if node.recipes.include?('monit') and respond_to?(:monitrc)
   monitrc "nginx.monitrc" do
-    template_cookbook 'elasticsearch'
+    template_cookbook 'elasticsearch2'
     source 'nginx.monitrc.conf.erb'
   end
 end

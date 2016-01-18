@@ -95,10 +95,10 @@
 # Note, that you have to verify the path to the device file: in some environments, these will
 # have the format of `/dev/sd*`, on others `/dev/xvd*`, etc.
 #
-data = Chef::DataBagItem.load('elasticsearch', 'data')[node.chef_environment] rescue {}
+data = Chef::DataBagItem.load('elasticsearch2', 'data')[node.chef_environment] rescue {}
 
-default.elasticsearch[:data][:devices] = data['devices'] || {}
+default.elasticsearch2[:data][:devices] = data['devices'] || {}
 
 # Perform package update (https://github.com/opscode-cookbooks/build-essential#usage)
 #
-node.default.build_essential.compiletime = true if node.recipes.any? { |r| r =~ /elasticsearch::ebs|build-essential/ }
+node.default.build_essential.compiletime = true if node.recipes.any? { |r| r =~ /elasticsearch2::ebs|build-essential/ }

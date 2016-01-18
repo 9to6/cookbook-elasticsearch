@@ -20,7 +20,7 @@ end
 #
 # See the `attributes/data` file for instructions.
 #
-node.elasticsearch[:data][:devices].each do |device, params|
+node.elasticsearch2[:data][:devices].each do |device, params|
   if params[:ebs] && !params[:ebs].keys.empty?
     create_ebs device, params
   end

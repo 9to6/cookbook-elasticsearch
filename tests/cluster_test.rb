@@ -1,6 +1,6 @@
 require 'minitest/spec'
 
-describe_recipe 'elasticsearch::default' do
+describe_recipe 'elasticsearch2::default' do
 
   include MiniTest::Chef::Assertions
   include MiniTest::Chef::Context

@@ -1,4 +1,4 @@
-describe_recipe 'elasticsearch::aws' do
+describe_recipe 'elasticsearch2::aws' do
 
   include MiniTest::Chef::Assertions
   include MiniTest::Chef::Context
@@ -11,7 +11,7 @@ describe_recipe 'elasticsearch::aws' do
 
 
   it "creates the directory" do
-    if node.recipes.include?("elasticsearch::aws")
+    if node.recipes.include?("elasticsearch2::aws")
       directory("/usr/local/elasticsearch/plugins/cloud-aws/").must_exist.with(:owner, 'elasticsearch')
     end
   end

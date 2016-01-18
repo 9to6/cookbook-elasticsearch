@@ -2,7 +2,7 @@
 #
 begin
   monitrc "elasticsearch" do
-    template_cookbook "elasticsearch"
+    template_cookbook "elasticsearch2"
     template_source   "elasticsearch.monitrc.conf.erb"
     source            "elasticsearch.monitrc.conf.erb"
   end

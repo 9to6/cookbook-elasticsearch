@@ -1,4 +1,4 @@
-describe_recipe 'elasticsearch::default' do
+describe_recipe 'elasticsearch2::default' do
 
   include MiniTest::Chef::Assertions
   include MiniTest::Chef::Context
@@ -7,15 +7,15 @@ describe_recipe 'elasticsearch::default' do
   describe "Installation" do
 
     it "installs libraries to versioned directory" do
-      version = node[:elasticsearch][:version]
+      version = node[:elasticsearch2][:version]
 
-      directory("/usr/local/elasticsearch-#{node[:elasticsearch][:version]}").
+      directory("/usr/local/elasticsearch-#{node[:elasticsearch2][:version]}").
         must_exist.
         with(:owner, 'elasticsearch')
     end
 
     it "installs elasticsearch jar" do
-      version = node[:elasticsearch][:version]
+      version = node[:elasticsearch2][:version]
 
       file("/usr/local/elasticsearch-#{version}/lib/elasticsearch-#{version}.jar").
         must_exist.
@@ -23,7 +23,7 @@ describe_recipe 'elasticsearch::default' do
     end if Chef::VERSION > '10.14'
 
     it "has a link to versioned directory" do
-      version = node[:elasticsearch][:version]
+      version = node[:elasticsearch2][:version]
 
       link("/usr/local/elasticsearch").
         must_exist.

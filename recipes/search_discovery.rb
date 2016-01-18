@@ -17,14 +17,14 @@
 # `node'elasticsearch']['discovery']['node_attribute']` attribute.
 # Reasonable values include `"fqdn"` and `"cloud.public_ipv4`.
 #
-node.set['elasticsearch']['discovery']['zen']['ping']['multicast']['enabled'] = false
-nodes = search_for_nodes(node['elasticsearch']['discovery']['search_query'],
-                         node['elasticsearch']['discovery']['node_attribute'])
+node.set['elasticsearch2']['discovery']['zen']['ping']['multicast']['enabled'] = false
+nodes = search_for_nodes(node['elasticsearch2']['discovery']['search_query'],
+                         node['elasticsearch2']['discovery']['node_attribute'])
 Chef::Log.debug("Found elasticsearch nodes at #{nodes.join(', ').inspect}")
-node.set['elasticsearch']['discovery']['zen']['ping']['unicast']['hosts'] = nodes.join(',')
+node.set['elasticsearch2']['discovery']['zen']['ping']['unicast']['hosts'] = nodes.join(',')
 
 # set minimum_master_nodes to n/2+1 to avoid split brain scenarios
-node.default['elasticsearch']['discovery']['zen']['minimum_master_nodes'] = (nodes.length / 2).floor + 1
+node.default['elasticsearch2']['discovery']['zen']['minimum_master_nodes'] = (nodes.length / 2).floor + 1
 
 # we don't want all of the nodes in the cluster to restart when a new node joins
-node.set['elasticsearch']['skip_restart'] = true
+node.set['elasticsearch2']['skip_restart'] = true
