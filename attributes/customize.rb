@@ -5,5 +5,5 @@
 #
 # The following shows how to override the Elasticsearch version and cluster name settings:
 #
-# normal[:elasticsearch][:version] = '1.1.0'
-# normal[:elasticsearch][:cluster][:name] = 'my-cluster'
+# normal[:elasticsearch2][:version] = '1.1.0'
+# normal[:elasticsearch2][:cluster][:name] = 'my-cluster'

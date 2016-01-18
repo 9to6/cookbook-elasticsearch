@@ -3,24 +3,24 @@
 # See <https://github.com/elasticsearch/elasticsearch/blob/master/bin/elasticsearch.in.sh>
 #
 
-<%= "JAVA_HOME='#{node.elasticsearch[:java_home]}'\n" if node.elasticsearch[:java_home] -%>
-ES_HOME='<%= "#{node.elasticsearch[:dir]}/elasticsearch" %>'
+<%= "JAVA_HOME='#{node.elasticsearch2[:java_home]}'\n" if node.elasticsearch2[:java_home] -%>
+ES_HOME='<%= "#{node.elasticsearch2[:dir]}/elasticsearch" %>'
 ES_CLASSPATH=$ES_CLASSPATH:$ES_HOME/lib/*:$ES_HOME/lib/sigar/*
-ES_HEAP_SIZE=<%= node.elasticsearch[:allocated_memory] %>
+ES_HEAP_SIZE=<%= node.elasticsearch2[:allocated_memory] %>
 
 ES_JAVA_OPTS="
   -server
   -Djava.net.preferIPv4Stack=true
-  -Des.config=<%= node.elasticsearch[:path][:conf] %>/elasticsearch.yml
-  -Xms<%= node.elasticsearch[:allocated_memory] %>
-  -Xmx<%= node.elasticsearch[:allocated_memory] %>
-  -Xss<%= node.elasticsearch[:thread_stack_size] %>
-  <%= node.elasticsearch[:gc_settings] %>
-<% if node.elasticsearch[:jmx] %>
+  -Des.config=<%= node.elasticsearch2[:path][:conf] %>/elasticsearch.yml
+  -Xms<%= node.elasticsearch2[:allocated_memory] %>
+  -Xmx<%= node.elasticsearch2[:allocated_memory] %>
+  -Xss<%= node.elasticsearch2[:thread_stack_size] %>
+  <%= node.elasticsearch2[:gc_settings] %>
+<% if node.elasticsearch2[:jmx] %>
   -Dcom.sun.management.jmxremote.ssl=false
   -Dcom.sun.management.jmxremote.authenticate=false
   -Dcom.sun.management.jmxremote.port=3333
   -Djava.rmi.server.hostname=<%= node[:ipaddress] %>
 <% end %>
-  <%= node.elasticsearch[:env_options] %>
+  <%= node.elasticsearch2[:env_options] %>
 "

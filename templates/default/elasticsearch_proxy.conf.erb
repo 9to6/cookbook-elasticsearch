@@ -1,14 +1,14 @@
 server {
-  listen   <%= node.elasticsearch[:nginx][:port] %>;
-  server_name  <%= node.elasticsearch[:nginx][:server_name] %>;
-  client_max_body_size <%= node.elasticsearch[:nginx][:client_max_body_size] %>;
+  listen   <%= node.elasticsearch2[:nginx][:port] %>;
+  server_name  <%= node.elasticsearch2[:nginx][:server_name] %>;
+  client_max_body_size <%= node.elasticsearch2[:nginx][:client_max_body_size] %>;
 
-  error_log   <%= node.elasticsearch[:nginx][:log_dir] %>/elasticsearch-errors.log;
-  access_log  <%= node.elasticsearch[:nginx][:log_dir] %>/elasticsearch.log;
+  error_log   <%= node.elasticsearch2[:nginx][:log_dir] %>/elasticsearch-errors.log;
+  access_log  <%= node.elasticsearch2[:nginx][:log_dir] %>/elasticsearch.log;
 
-  location <%= node.elasticsearch[:nginx][:location] %> {
+  location <%= node.elasticsearch2[:nginx][:location] %> {
 
-<% unless node.elasticsearch[:nginx][:allow_shutdown_api] %>
+<% unless node.elasticsearch2[:nginx][:allow_shutdown_api] %>
     # Deny Nodes Shutdown API
     if ($request_filename ~ "_shutdown") {
       return 403;
@@ -16,7 +16,7 @@ server {
     }
 <% end %>
 
-<% unless node.elasticsearch[:nginx][:allow_cluster_api] %>
+<% unless node.elasticsearch2[:nginx][:allow_cluster_api] %>
     # Deny access to Cluster API
     if ($request_filename ~ "_cluster") {
       return 403;
@@ -24,7 +24,7 @@ server {
     }
 <% end %>
 
-<% unless node.elasticsearch[:nginx][:allow_plugin] %>
+<% unless node.elasticsearch2[:nginx][:allow_plugin] %>
     # Deny access to Cluster API
     if ($request_filename ~ "_plugin") {
       return 403;
@@ -36,11 +36,11 @@ server {
     set_real_ip_from 0.0.0.0/0;
 
     # Pass requests to ElasticSearch
-    proxy_pass http://<%= node.elasticsearch.network.host rescue 'localhost' %>:<%= node.elasticsearch.http.port rescue '9200' %>/;
+    proxy_pass http://<%= node.elasticsearch2.network.host rescue 'localhost' %>:<%= node.elasticsearch2.http.port rescue '9200' %>/;
     proxy_redirect off;
-    proxy_connect_timeout <%= node.elasticsearch[:nginx][:proxy_connect_timeout] %>;
-    proxy_read_timeout <%= node.elasticsearch[:nginx][:proxy_read_timeout] %>;
-    proxy_send_timeout <%= node.elasticsearch[:nginx][:proxy_send_timeout] %>;
+    proxy_connect_timeout <%= node.elasticsearch2[:nginx][:proxy_connect_timeout] %>;
+    proxy_read_timeout <%= node.elasticsearch2[:nginx][:proxy_read_timeout] %>;
+    proxy_send_timeout <%= node.elasticsearch2[:nginx][:proxy_send_timeout] %>;
 
     proxy_set_header  X-Real-IP  $remote_addr;
     proxy_set_header  X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -53,33 +53,33 @@ server {
     add_header Access-Control-Allow-Headers 'X-Requested-With, Content-Type';
     add_header Access-Control-Allow-Credentials true;
 
-<% unless node.elasticsearch[:nginx][:users].empty? %>
+<% unless node.elasticsearch2[:nginx][:users].empty? %>
     # Authorize access
     auth_basic           "ElasticSearch";
-    auth_basic_user_file <%= node.elasticsearch[:nginx][:passwords_file] %>;
+    auth_basic_user_file <%= node.elasticsearch2[:nginx][:passwords_file] %>;
 <% end %>
 
   }
 
-<% unless node.elasticsearch[:nginx][:allow_root_search] %>
+<% unless node.elasticsearch2[:nginx][:allow_root_search] %>
   # Deny root _search API
   location /_search {
     return 403;
   }
 <% end %>
 
-<% if node.elasticsearch[:nginx][:allow_status] %>
+<% if node.elasticsearch2[:nginx][:allow_status] %>
   location /status {
     proxy_method HEAD;
     proxy_intercept_errors on;
-    proxy_pass http://localhost:<%= node.elasticsearch[:http][:port] %>/;
+    proxy_pass http://localhost:<%= node.elasticsearch2[:http][:port] %>/;
   }
 <% end %>
 
-<% if node.elasticsearch[:nginx][:ssl][:cert_file] && node.elasticsearch[:nginx][:ssl][:key_file] %>
+<% if node.elasticsearch2[:nginx][:ssl][:cert_file] && node.elasticsearch2[:nginx][:ssl][:key_file] %>
   ssl on;
-  ssl_certificate <%= node.elasticsearch[:nginx][:ssl][:cert_file] %>;
-  ssl_certificate_key <%= node.elasticsearch[:nginx][:ssl][:key_file] %>;
+  ssl_certificate <%= node.elasticsearch2[:nginx][:ssl][:cert_file] %>;
+  ssl_certificate_key <%= node.elasticsearch2[:nginx][:ssl][:key_file] %>;
   
   server_tokens off;
   ssl_protocols TLSv1 TLSv1.1 TLSv1.2;

@@ -38,7 +38,7 @@ module Extensions
   end
 
   def find_matching_nodes(query = nil)
-    query ||= "roles:elasticsearch AND chef_environment:#{node.chef_environment} AND elasticsearch_cluster_name:#{node[:elasticsearch][:cluster][:name]}"
+    query ||= "roles:elasticsearch2 AND chef_environment:#{node.chef_environment} AND elasticsearch_cluster_name:#{node[:elasticsearch2][:cluster][:name]}"
     results = []
     Chef::Log.debug("Searching for nodes with query: \"#{query}\"")
     Chef::Search::Query.new.search(:node, query) { |o| results << o }

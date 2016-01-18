@@ -29,7 +29,7 @@ es.logger.level: INFO
 rootLogger: INFO, console, file
 
 # ----- Configuration set by Chef ---------------------------------------------
-<% node.elasticsearch[:logging].sort.each do |key, value| %>
+<% node.elasticsearch2[:logging].sort.each do |key, value| %>
 logger.<%= key %>: <%= value %>
 <% end %>
 # -----------------------------------------------------------------------------

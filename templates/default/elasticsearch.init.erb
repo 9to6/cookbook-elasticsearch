@@ -16,7 +16,7 @@
 # chkconfig:   - 57 47
 # description: elasticsearch
 # processname: elasticsearch
-# config:      <%= node[:elasticsearch][:path][:conf] %>/elasticsearch.yml
+# config:      <%= node[:elasticsearch2][:path][:conf] %>/elasticsearch.yml
 <% end %>
 
 # Source networking configuration
@@ -25,18 +25,18 @@ if [ -f /etc/sysconfig/network ]; then source /etc/sysconfig/network; fi
 
 # Set limits for environments ignoring `/etc/security/limits.d`
 #
-ulimit -n <%= node[:elasticsearch][:limits][:nofile] %>
-ulimit -l <%= node[:elasticsearch][:limits][:memlock] %>
+ulimit -n <%= node[:elasticsearch2][:limits][:nofile] %>
+ulimit -l <%= node[:elasticsearch2][:limits][:memlock] %>
 
 # Maximum number of VMA (Virtual Memory Areas) a process can own
-sysctl -q -w vm.max_map_count=<%= node[:elasticsearch][:limits][:mapcount] %>
+sysctl -q -w vm.max_map_count=<%= node[:elasticsearch2][:limits][:mapcount] %>
 
 # Exit if networking is not up
 #
 [ "$NETWORKING" = "no" ] && exit
 
-PIDFILE='<%= node.elasticsearch[:pid_file] %>'
-ES_INCLUDE='<%= node.elasticsearch[:path][:conf] %>/elasticsearch-env.sh'
+PIDFILE='<%= node.elasticsearch2[:pid_file] %>'
+ES_INCLUDE='<%= node.elasticsearch2[:path][:conf] %>/elasticsearch-env.sh'
 CHECK_PID_RUNNING=$(ps ax | grep 'java' | grep -e "es.pidfile=$PIDFILE" | sed 's/^\s*\([0-9]*\)\s.*/\1/')
 RUBY_BIN=""
 
@@ -63,11 +63,11 @@ start() {
     fi
 
     echo -en "\033[1mStarting Elasticsearch...\033[0m"
-    touch $PIDFILE && chown <%= node[:elasticsearch][:user] %> $PIDFILE
+    touch $PIDFILE && chown <%= node[:elasticsearch2][:user] %> $PIDFILE
     <% if node.platform_family == 'debian' %>
-      ES_INCLUDE=$ES_INCLUDE start-stop-daemon --background --start --quiet --pidfile $PIDFILE --chuid <%= node[:elasticsearch][:user] %> --exec <%= node[:elasticsearch][:bindir] %>/elasticsearch -- -p $PIDFILE
+      ES_INCLUDE=$ES_INCLUDE start-stop-daemon --background --start --quiet --pidfile $PIDFILE --chuid <%= node[:elasticsearch2][:user] %> --exec <%= node[:elasticsearch2][:bindir] %>/elasticsearch -- -p $PIDFILE
     <% else %>
-      su <%= node[:elasticsearch][:user] %> -c "ES_INCLUDE=$ES_INCLUDE <%= node[:elasticsearch][:bindir] %>/elasticsearch<%= node[:elasticsearch][:version] > '1' ? ' -d' : '' %> -p $PIDFILE"
+      su <%= node[:elasticsearch2][:user] %> -c "ES_INCLUDE=$ES_INCLUDE <%= node[:elasticsearch2][:bindir] %>/elasticsearch<%= node[:elasticsearch2][:version] > '1' ? ' -d' : '' %> -p $PIDFILE"
     <% end %>
 
     if [ $? ]; then
@@ -93,7 +93,7 @@ stop() {
 
       # KILL PROCESS
       pid=$(cat $PIDFILE)
-      su <%= node[:elasticsearch][:user] %> -m -c "kill $(cat $PIDFILE)"
+      su <%= node[:elasticsearch2][:user] %> -m -c "kill $(cat $PIDFILE)"
       r=$?
 
       # Check for process
@@ -141,7 +141,7 @@ status() {
   # RUNNING
   if [[ $pid && -d "/proc/$pid" ]]; then
     if [ -z "$RUBY_BIN" ]; then
-      version=$(curl -s 'http://localhost:<%= node.elasticsearch[:http][:port] %>' | $RUBY_BIN -e 'require "json"; print JSON.parse(STDIN.read)["version"]["number"]')
+      version=$(curl -s 'http://localhost:<%= node.elasticsearch2[:http][:port] %>' | $RUBY_BIN -e 'require "json"; print JSON.parse(STDIN.read)["version"]["number"]')
       echo -e "\033[1;37;46melasticsearch $version running with PID $pid\033[0m"
     else
       echo -e "\033[1;37;46melasticsearch running with PID $pid\033[0m"
@@ -149,7 +149,7 @@ status() {
     # VERBOSE
     if [[ $pid && $1 == '-v' || $1 == '--verbose' ]]; then
       if [ -z "$RUBY_BIN" ]; then
-        curl -s 'http://localhost:<%= node.elasticsearch[:http][:port] %>/_cluster/nodes/<%= node.elasticsearch[:node][:name] %>?os&process&jvm&network&transport&settings&pretty' | \
+        curl -s 'http://localhost:<%= node.elasticsearch2[:http][:port] %>/_cluster/nodes/<%= node.elasticsearch2[:node][:name] %>?os&process&jvm&network&transport&settings&pretty' | \
         $RUBY_BIN -e '
           begin
             require "json"; h = JSON.parse(STDIN.read); id, node = h["nodes"].first;

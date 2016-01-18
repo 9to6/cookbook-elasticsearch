@@ -1,50 +1,50 @@
-# Load settings from data bag 'elasticsearch/settings'
+# Load settings from data bag 'elasticsearch2/settings'
 #
-settings = Chef::DataBagItem.load('elasticsearch', 'settings')[node.chef_environment] rescue {}
+settings = Chef::DataBagItem.load('elasticsearch2', 'settings')[node.chef_environment] rescue {}
 Chef::Log.debug "Loaded settings: #{settings.inspect}"
 
 # Initialize the node attributes with node attributes merged with data bag attributes
 #
-node.default[:elasticsearch] ||= {}
-node.normal[:elasticsearch]  ||= {}
+node.default[:elasticsearch2] ||= {}
+node.normal[:elasticsearch2]  ||= {}
 
-include_attribute 'elasticsearch::customize'
+include_attribute 'elasticsearch2::customize'
 
-node.normal[:elasticsearch]    = DeepMerge.merge(node.default[:elasticsearch].to_hash, node.normal[:elasticsearch].to_hash)
-node.normal[:elasticsearch]    = DeepMerge.merge(node.normal[:elasticsearch].to_hash, settings.to_hash)
+node.normal[:elasticsearch2]    = DeepMerge.merge(node.default[:elasticsearch2].to_hash, node.normal[:elasticsearch2].to_hash)
+node.normal[:elasticsearch2]    = DeepMerge.merge(node.normal[:elasticsearch2].to_hash, settings.to_hash)
 
 
 # === VERSION AND LOCATION
 #
-default.elasticsearch[:version]       = "1.6.0"
-default.elasticsearch[:host]          = "http://download.elastic.co"
-default.elasticsearch[:repository]    = "elasticsearch/elasticsearch"
-default.elasticsearch[:filename]      = nil
-default.elasticsearch[:download_url]  = nil
+default.elasticsearch2[:version]       = "1.6.0"
+default.elasticsearch2[:host]          = "http://download.elastic.co"
+default.elasticsearch2[:repository]    = "elasticsearch/elasticsearch"
+default.elasticsearch2[:filename]      = nil
+default.elasticsearch2[:download_url]  = nil
 
 # === NAMING
 #
-default.elasticsearch[:cluster][:name] = 'elasticsearch'
-default.elasticsearch[:node][:name]    = node.name
+default.elasticsearch2[:cluster][:name] = 'elasticsearch2'
+default.elasticsearch2[:node][:name]    = node.name
 
 # === USER & PATHS
 #
-default.elasticsearch[:dir]       = "/usr/local"
-default.elasticsearch[:bindir]    = "/usr/local/bin"
-default.elasticsearch[:user]      = "elasticsearch"
-default.elasticsearch[:uid]       = nil
-default.elasticsearch[:gid]       = nil
+default.elasticsearch2[:dir]       = "/usr/local"
+default.elasticsearch2[:bindir]    = "/usr/local/bin"
+default.elasticsearch2[:user]      = "elasticsearch"
+default.elasticsearch2[:uid]       = nil
+default.elasticsearch2[:gid]       = nil
 
-default.elasticsearch[:path][:conf] = "/usr/local/etc/elasticsearch"
-default.elasticsearch[:path][:data] = "/usr/local/var/data/elasticsearch"
-default.elasticsearch[:path][:logs] = "/usr/local/var/log/elasticsearch"
+default.elasticsearch2[:path][:conf] = "/usr/local/etc/elasticsearch"
+default.elasticsearch2[:path][:data] = "/usr/local/var/data/elasticsearch"
+default.elasticsearch2[:path][:logs] = "/usr/local/var/log/elasticsearch"
 
-default.elasticsearch[:pid_path]  = "/usr/local/var/run"
-default.elasticsearch[:pid_file]  = "#{node.elasticsearch[:pid_path]}/#{node.elasticsearch[:node][:name].to_s.gsub(/\W/, '_')}.pid"
+default.elasticsearch2[:pid_path]  = "/usr/local/var/run"
+default.elasticsearch2[:pid_file]  = "#{node.elasticsearch2[:pid_path]}/#{node.elasticsearch2[:node][:name].to_s.gsub(/\W/, '_')}.pid"
 
-default.elasticsearch[:templates][:elasticsearch_env] = "elasticsearch-env.sh.erb"
-default.elasticsearch[:templates][:elasticsearch_yml] = "elasticsearch.yml.erb"
-default.elasticsearch[:templates][:logging_yml]       = "logging.yml.erb"
+default.elasticsearch2[:templates][:elasticsearch_env] = "elasticsearch-env.sh.erb"
+default.elasticsearch2[:templates][:elasticsearch_yml] = "elasticsearch.yml.erb"
+default.elasticsearch2[:templates][:logging_yml]       = "logging.yml.erb"
 
 # === MEMORY
 #
@@ -52,11 +52,11 @@ default.elasticsearch[:templates][:logging_yml]       = "logging.yml.erb"
 # You may choose to set it in your node/role configuration instead.
 #
 allocated_memory = "#{(node.memory.total.to_i * 0.5 ).floor / 1024}m"
-default.elasticsearch[:allocated_memory] = allocated_memory
+default.elasticsearch2[:allocated_memory] = allocated_memory
 
 # === GARBAGE COLLECTION SETTINGS
 #
-default.elasticsearch[:gc_settings] =<<-CONFIG
+default.elasticsearch2[:gc_settings] =<<-CONFIG
   -XX:+UseParNewGC
   -XX:+UseConcMarkSweepGC
   -XX:CMSInitiatingOccupancyFraction=75
@@ -69,67 +69,67 @@ CONFIG
 # By default, the `mlockall` is set to true: on weak machines and Vagrant boxes,
 # you may want to disable it.
 #
-default.elasticsearch[:bootstrap][:mlockall] = ( node.memory.total.to_i >= 1048576 ? true : false )
-default.elasticsearch[:limits][:memlock]  = 'unlimited'
-default.elasticsearch[:limits][:nofile]   = '64000'
-default.elasticsearch[:limits][:mapcount] = '262144'
+default.elasticsearch2[:bootstrap][:mlockall] = ( node.memory.total.to_i >= 1048576 ? true : false )
+default.elasticsearch2[:limits][:memlock]  = 'unlimited'
+default.elasticsearch2[:limits][:nofile]   = '64000'
+default.elasticsearch2[:limits][:mapcount] = '262144'
 
 # === PRODUCTION SETTINGS
 #
-default.elasticsearch[:index][:mapper][:dynamic]   = true
-default.elasticsearch[:action][:auto_create_index] = true
-default.elasticsearch[:action][:disable_delete_all_indices] = true
-default.elasticsearch[:node][:max_local_storage_nodes] = 1
+default.elasticsearch2[:index][:mapper][:dynamic]   = true
+default.elasticsearch2[:action][:auto_create_index] = true
+default.elasticsearch2[:action][:disable_delete_all_indices] = true
+default.elasticsearch2[:node][:max_local_storage_nodes] = 1
 
-default.elasticsearch[:discovery][:zen][:ping][:multicast][:enabled] = true
-default.elasticsearch[:discovery][:zen][:minimum_master_nodes] = 1
-default.elasticsearch[:gateway][:type] = 'local'
-default.elasticsearch[:gateway][:expected_nodes] = 1
+default.elasticsearch2[:discovery][:zen][:ping][:multicast][:enabled] = true
+default.elasticsearch2[:discovery][:zen][:minimum_master_nodes] = 1
+default.elasticsearch2[:gateway][:type] = 'local'
+default.elasticsearch2[:gateway][:expected_nodes] = 1
 
-default.elasticsearch[:thread_stack_size] = "256k"
+default.elasticsearch2[:thread_stack_size] = "256k"
 
-default.elasticsearch[:env_options] = ""
+default.elasticsearch2[:env_options] = ""
 
-default.elasticsearch[:indices][:breaker][:fielddata][:limit] = "85%"
-default.elasticsearch[:indices][:breaker][:request][:limit] = "55%"
-default.elasticsearch[:indices][:breaker][:total][:limit] = "90%"
-default.elasticsearch[:indices][:fielddata][:cache][:size] = "75%"
+default.elasticsearch2[:indices][:breaker][:fielddata][:limit] = "85%"
+default.elasticsearch2[:indices][:breaker][:request][:limit] = "55%"
+default.elasticsearch2[:indices][:breaker][:total][:limit] = "90%"
+default.elasticsearch2[:indices][:fielddata][:cache][:size] = "75%"
 
-default.elasticsearch[:http][:max_content_length] = "1gb"
-default.elasticsearch[:cluster][:routing][:allocation][:disk][:watermark][:low] = "90%"
-default.elasticsearch[:cluster][:routing][:allocation][:disk][:watermark][:high] = "95%"
-default.elasticsearch[:cluster][:routing][:allocation][:balance][:shard] = 0.1
-default.elasticsearch[:cluster][:routing][:allocation][:balance][:index] = 0.9
-default.elasticsearch[:cluster][:routing][:allocation][:balance][:primary] = 0.0
-default.elasticsearch[:cluster][:routing][:allocation][:balance][:threshold] = 0.8
+default.elasticsearch2[:http][:max_content_length] = "1gb"
+default.elasticsearch2[:cluster][:routing][:allocation][:disk][:watermark][:low] = "90%"
+default.elasticsearch2[:cluster][:routing][:allocation][:disk][:watermark][:high] = "95%"
+default.elasticsearch2[:cluster][:routing][:allocation][:balance][:shard] = 0.1
+default.elasticsearch2[:cluster][:routing][:allocation][:balance][:index] = 0.9
+default.elasticsearch2[:cluster][:routing][:allocation][:balance][:primary] = 0.0
+default.elasticsearch2[:cluster][:routing][:allocation][:balance][:threshold] = 0.8
 
   # 1 for not using SSD
-default.elasticsearch[:index][:merge][:scheduler][:max_thread_count] = 1
+default.elasticsearch2[:index][:merge][:scheduler][:max_thread_count] = 1
 
   # 1GB for indexing performance (ES default : 200MB)
-default.elasticsearch[:index][:translog][:flush_threshold_size] = "1GB"
+default.elasticsearch2[:index][:translog][:flush_threshold_size] = "1GB"
 
   # for using Kibana
-default.elasticsearch[:http][:cors][:enabled] = true
+default.elasticsearch2[:http][:cors][:enabled] = true
 
 # === OTHER SETTINGS
 #
-default.elasticsearch[:skip_restart] = false
-default.elasticsearch[:skip_start] = false
+default.elasticsearch2[:skip_restart] = false
+default.elasticsearch2[:skip_start] = false
 
 # === PORT
 #
-default.elasticsearch[:http][:port] = 9200
+default.elasticsearch2[:http][:port] = 9200
 
 # === CUSTOM CONFIGURATION
 #
-default.elasticsearch[:custom_config] = {}
+default.elasticsearch2[:custom_config] = {}
 
 # === LOGGING
 #
 # See `attributes/logging.rb`
 #
-default.elasticsearch[:logging] = {}
+default.elasticsearch2[:logging] = {}
 
 # --------------------------------------------------
 # NOTE: Setting the attributes for elasticsearch.yml
@@ -157,8 +157,8 @@ default.elasticsearch[:logging] = {}
 # (eg. memory settings, node name), or reasonable defaults for production.
 #
 # The template is based on the elasticsearch.yml file from the Elasticsearch distribution;
-# to set other configurations, set the `node.elasticsearch[:custom_config]` attribute in the
-# node configuration, `elasticsearch/settings` data bag, role/environment definition, etc:
+# to set other configurations, set the `node.elasticsearch2[:custom_config]` attribute in the
+# node configuration, `elasticsearch2/settings` data bag, role/environment definition, etc:
 #
 #     // ...
 #     'threadpool.index.type' => 'fixed',

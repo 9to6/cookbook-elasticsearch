@@ -19,15 +19,15 @@ module Extensions
         require 'fog'
         require 'open-uri'
 
-        region      = params[:region] || node.elasticsearch[:cloud][:aws][:region]
+        region      = params[:region] || node.elasticsearch2[:cloud][:aws][:region]
         instance_id = open('http://169.254.169.254/latest/meta-data/instance-id'){|f| f.gets}
         raise "[!] Cannot get instance id from AWS meta-data API" unless instance_id
 
         Chef::Log.debug("Region: #{region}, instance ID: #{instance_id}")
 
         fog_options = { :provider => 'AWS', :region => region }
-        if (access_key = node.elasticsearch[:cloud][:aws][:access_key]) &&
-            (secret_key = node.elasticsearch[:cloud][:aws][:secret_key])
+        if (access_key = node.elasticsearch2[:cloud][:aws][:access_key]) &&
+            (secret_key = node.elasticsearch2[:cloud][:aws][:secret_key])
           fog_options.merge!(:aws_access_key_id => access_key, :aws_secret_access_key => secret_key)
         else  # Lack of credentials implies a IAM role will provide keys
           fog_options.merge!(:use_iam_profile => true)
@@ -66,7 +66,7 @@ module Extensions
 
           # Create tags
           aws.tags.new(:key => "Name", :value => node.name, :resource_id => volume.id, :resource_type => "volume").save
-          aws.tags.new(:key => "ClusterName", :value => node.elasticsearch[:cluster][:name], :resource_id => volume.id, :resource_type => "volume").save
+          aws.tags.new(:key => "ClusterName", :value => node.elasticsearch2[:cluster][:name], :resource_id => volume.id, :resource_type => "volume").save
 
           # Checking if block device is attached
           Chef::Log.info("Attaching volume: #{volume.id} ")
