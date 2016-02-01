@@ -90,10 +90,12 @@ default.elasticsearch[:thread_stack_size] = "256k"
 
 default.elasticsearch[:env_options] = ""
 
-default.elasticsearch[:indices][:breaker][:fielddata][:limit] = "85%"
-default.elasticsearch[:indices][:breaker][:request][:limit] = "55%"
-default.elasticsearch[:indices][:breaker][:total][:limit] = "90%"
-default.elasticsearch[:indices][:fielddata][:cache][:size] = "75%"
+default.elasticsearch[:indices][:breaker][:fielddata][:limit] = "60%" #"85%"
+default.elasticsearch[:indices][:breaker][:request][:limit] = "40%" #"55%"
+default.elasticsearch[:indices][:breaker][:total][:limit] = "70%" #"90%"
+default.elasticsearch[:indices][:fielddata][:cache][:size] = "unbounded" #"75%"
+default.elasticsearch[:indices][:store][:throttle][:type] = "merge"
+default.elasticsearch[:indices][:store][:throttle][:max_bytes_per_sec] = "20mb"
 
 default.elasticsearch[:http][:max_content_length] = "1gb"
 default.elasticsearch[:cluster][:routing][:allocation][:disk][:watermark][:low] = "90%"
@@ -101,7 +103,9 @@ default.elasticsearch[:cluster][:routing][:allocation][:disk][:watermark][:high]
 default.elasticsearch[:cluster][:routing][:allocation][:balance][:shard] = 0.1
 default.elasticsearch[:cluster][:routing][:allocation][:balance][:index] = 0.9
 default.elasticsearch[:cluster][:routing][:allocation][:balance][:primary] = 0.0
-default.elasticsearch[:cluster][:routing][:allocation][:balance][:threshold] = 0.8
+default.elasticsearch[:cluster][:routing][:allocation][:balance][:threshold] = 1.0 #0.8
+
+default.elasticsearch[:threadpool][:bulk][:queue_size] = 5000
 
   # 1 for not using SSD
 default.elasticsearch[:index][:merge][:scheduler][:max_thread_count] = 1
