@@ -93,7 +93,6 @@ default.elasticsearch[:env_options] = ""
 default.elasticsearch[:indices][:breaker][:fielddata][:limit] = "60%" #"85%"
 default.elasticsearch[:indices][:breaker][:request][:limit] = "40%" #"55%"
 default.elasticsearch[:indices][:breaker][:total][:limit] = "70%" #"90%"
-default.elasticsearch[:indices][:fielddata][:cache][:size] = "unbounded" #"75%"
 default.elasticsearch[:indices][:store][:throttle][:type] = "merge"
 default.elasticsearch[:indices][:store][:throttle][:max_bytes_per_sec] = "20mb"
 
