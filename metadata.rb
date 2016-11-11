@@ -7,7 +7,7 @@ description      "Installs and configures elasticsearch2"
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.markdown'))
 version          "0.3.13"
 
-depends 'ark', '>= 0.2.4'
+depends 'ark', '>= 0.2.4', '< 1.0.0'
 
 suggests 'build-essential'
 suggests 'xml'
