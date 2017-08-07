@@ -45,7 +45,7 @@ describe_recipe 'elasticsearch2::default' do
       file("/usr/local/etc/elasticsearch/elasticsearch.yml").
         must_include("cluster.name: elasticsearch_vagrant").
         must_include("path.data: /usr/local/var/data/elasticsearch/disk1").
-        must_include("bootstrap.mlockall: false").
+        must_include("bootstrap.memory_lock: false").
         must_include("index.search.slowlog.threshold.query.trace: 1ms").
         must_include("discovery.zen.ping.timeout: 9s").
         must_include("threadpool.index.size: 2")

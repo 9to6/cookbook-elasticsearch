@@ -66,10 +66,10 @@ CONFIG
 
 # === LIMITS
 #
-# By default, the `mlockall` is set to true: on weak machines and Vagrant boxes,
+# By default, the `memory_lock` is set to true: on weak machines and Vagrant boxes,
 # you may want to disable it.
 #
-default.elasticsearch2[:bootstrap][:mlockall] = ( node.memory.total.to_i >= 1048576 ? true : false )
+default.elasticsearch2[:bootstrap][:memory_lock] = ( node.memory.total.to_i >= 1048576 ? true : false )
 default.elasticsearch2[:limits][:memlock]  = 'unlimited'
 default.elasticsearch2[:limits][:nofile]   = '64000'
 default.elasticsearch2[:limits][:mapcount] = '262144'
